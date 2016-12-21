@@ -1,0 +1,13 @@
+在linux 2.6内核上使用direct io不难，只需按照如下几点来做即可：
+1，在open文件时加上O_DIRECT旗标，这样以通告内核我们想对该文件进行直接io操作。
+2，在源文件的最顶端加上_GNU_SOURCE宏定义，或在编译时加在命令行上也可以，否则将提示：
+   error: 'O_DIRECT' undeclared (first use in this function)
+3，存放文件数据的缓存区起始位置以及每一次读写数据长度必须是磁盘逻辑块大小的整数倍，一般也就是512字节（也有可能是一内存页大小，4096），否则将导致read/write失败，perror将提示：read failed: Invalid argument或write failed: Invalid argument。
+1和2很容易做到，而第3点，要满足缓存区起始位置与512对齐，这可以在进行缓存区空间申请时使用posix_memalign这样的函数指定512对齐：
+ret = posix_memalign((void **)&buf, 512, BUF_SIZE);
+或者进行手动调节对齐：
+real_buf = malloc(BUF_SIZE + 512);
+aligned_buf = ((((unsigned int)real_buf + 512 - 1) / 512) * 512);
+
+由于要满足每一次读写数据长度必须是磁盘逻辑块大小的整数倍，所以最后一次文件操作可能无法满足，此时只能重新以cached io模式打开文件后，fseek到对应位置进行剩余数据的读写。
+为什么要使用direct io？因为direct io不过文件系统缓冲，也就是说对文件进行direct io操作不会减少系统的free内存数量，这对于自己本身带有缓存的应用程序（比如数据库）比较有用。
