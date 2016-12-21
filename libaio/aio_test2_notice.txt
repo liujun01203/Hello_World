@@ -1,0 +1,26 @@
+struct iocb {  
+       /* these are internal to the kernel/libc. */  
+       __u64   aio_data;       /* data to be returned in event\'s data */用来返回异步IO事件信息的空间，类似于epoll中的ptr。  
+       __u32   PADDED(aio_key, aio_reserved1); /* the kernel sets aio_key to the req # */  
+       /* common fields */  
+       __u16   aio_lio_opcode; /* see IOCB_CMD_ above */  
+       __s16   aio_reqprio;      //请求的优先级  
+       __u32   aio_fildes;       //文件描述符  
+       __u64   aio_buf;          //用户态缓冲区  
+       __u64   aio_nbytes;       //文件操作的字节数  
+       __s64   aio_offset;       //文件操作的偏移量  
+ 
+       /* extra parameters */  
+       __u64   aio_reserved2;  /* TODO: use this for a (struct sigevent *) */  
+       __u64   aio_reserved3;  
+}; /* 64 bytes */  
+ 
+struct io_event {  
+       __u64  data;     /* the data field from the iocb */ // 类似于epoll_event中的ptr  
+       __u64  obj;      /* what iocb this event came from */ // 对应的用户态iocb结构体指针  
+       __s64  res;      /* result code for this event */ // 操作的结果，类似于read/write的返回值  
+       __s64  res2;     /* secondary result */  
+};  
+
+compile:
+gcc xxx -laio

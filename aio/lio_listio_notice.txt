@@ -1,0 +1,5 @@
+aio同时还为我们提供了一个可以发起多个或多种I/O请求的接口lio_listio 
+这个函数效率很高，因为我们只需一次系统调用(一次内核上下位切换)就可以完成大量的I/O操作 
+其函数原型如下
+int lio_listio(int mode,struct aiocb *list[],int nent,struct sigevent *sig);
+第一个参数mode可以有俩个实参，LIO_WAIT和LIO_NOWAIT，前一个会阻塞该调用直到所有I/O都完成为止，后一个则会挂入队列就返回

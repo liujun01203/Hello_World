@@ -1,0 +1,27 @@
+当我们的异步I/O操作完成之时，我们可以通过信号通知我们的进程,也可用回调函数来进行异步通知，接下来我会为大家介绍以回调函数来进行异步通知，关于信号通知有兴趣的同学自己去学习
+
+使用回调进行异步通知
+该种通知方式使用一个系统回调函数来通知应用程序，要想完成此功能，我们必须在aiocb中设置我们想要进行异步回调的aiocb指针，以用来回调之后表示其自身
+
+线程回调是通过使用aiocb结构体中的aio_sigevent结构体来控制的，
+其定义如下
+
+struct sigevent
+{
+    sigval_t sigev_value;
+    int sigev_signo;
+    int sigev_notify;
+    union {
+        int _pad[SIGEV_PAD_SIZE];
+        int _tid;
+
+        struct {
+            void (*_function)(sigval_t);
+            void *_attribute;   /* really pthread_attr_t */
+        } _sigev_thread;
+    } _sigev_un;
+}
+
+#define sigev_notify_function   _sigev_un._sigev_thread._function
+#define sigev_notify_attributes _sigev_un._sigev_thread._attribute
+#define sigev_notify_thread_id   _sigev_un._tid
