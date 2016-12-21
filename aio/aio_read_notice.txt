@@ -1,0 +1,36 @@
+上述实例中aiocb结构体用来表示某一次特定的读写操作，在异步读操作时我们只需要注意4点内容 
+1.确定所要读的文件描述符，并写入aiocb结构体中(下面几条一样不再赘余) 
+2.确定读所需的缓冲区 
+3.确定读的字节数 
+4.确定文件的偏移量 
+总结以上注意事项：基本上和我们的read函数所需的条件相似，唯一的区别就是多一个文件偏移量
+
+
+值得注意的是上述代码中aio_error是用来获取其参数指定的读写操作的状态的 
+其原型如下
+int aio_error(struct aiocb *aiopcb);
+当其状态处于EINPROGRESS则I/O还没完成，当处于ECANCELLED则操作已被取消，发生错误返回-1
+
+而aio_return则是用来返回其参数指定I/O操作的返回值 
+其原型如下
+ssize_t aio_return(struct aiocb *paiocb);
+
+如果操作没完成调用此函数，则会产生错误
+
+特别提醒在编译上述程序时必须在编译时再加一个-lrt
+gcc aio_read.c -lrt
+
+
+struct aiocb
+{
+    //要异步操作的文件描述符
+    int aio_fildes;
+    //用于lio操作时选择操作何种异步I/O类型
+    int aio_lio_opcode;
+    //异步读或写的缓冲区的缓冲区
+    volatile void *aio_buf;
+    //异步读或写的字节数
+    size_t aio_nbytes;
+    //异步通知的结构体
+    struct sigevent aio_sigevent;
+}

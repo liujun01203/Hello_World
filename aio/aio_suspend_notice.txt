@@ -1,0 +1,4 @@
+aio_suspend函数可以使当前进程挂起，直到有向其注册的异步事件完成为止 
+该函数原型如下
+int aio_suspend(const struct aiocb *const cblist[],int n,const struct timespec *timeout);
+第一个参数是个保存了aiocb块地址的数组，我们可以向其添加想要等待阻塞的异步事件，第二个参数为向cblist注册的aiocb个数,第三个参数为等待阻塞的超时时间，NULL为无限等待

@@ -1,0 +1,5 @@
+aio_write用来请求异步写操作 
+其函数原型如下
+int aio_write(struct aiocb *paiocb);
+aio_write和aio_read函数类似，当该函数返回成功时，说明该写请求已进行排队(成功0，失败-1) 
+其和aio_read调用时的区别是如果在打开文件时，flags设置了O_APPEND则我们在填充aiocb时不需要填充它的偏移量了 
