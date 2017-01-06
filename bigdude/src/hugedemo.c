@@ -18,8 +18,8 @@
 #include <sys/mman.h>
 #include <fcntl.h>
 
-#define FILE_NAME "./hugepagefile"
-#define LENGTH (4*1024)
+#define FILE_NAME "/dev/hugepages/hugepagefile"
+#define LENGTH (24)
 #define PROTECTION (PROT_READ | PROT_WRITE)
 
 /* Only ia64 requires this */
@@ -33,12 +33,12 @@
 
 void check_bytes(char *addr)
 {
-	printf("First hex is %x\n", *((unsigned int *)addr));
+	printf("First hex is %x\n", addr);
 }
 
 void write_bytes(char *addr)
 {
-	unsigned long i;
+	unsigned char i;
 
 	for (i = 0; i < LENGTH; i++)
 		*(addr + i) = (char)i;
@@ -77,7 +77,7 @@ int main(void)
 	printf("Returned address is %p\n", addr);
 	check_bytes(addr);
 	write_bytes(addr);
-	read_bytes(addr);
+	//read_bytes(addr);
 
 	munmap(addr, LENGTH);
 	close(fd);
