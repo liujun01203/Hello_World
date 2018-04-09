@@ -1,3 +1,1 @@
-FROM ubuntu:16.04
-CMD ["ls"]
-
+FROM gcr.io/google_containers/hyperkube:v1.8.3
